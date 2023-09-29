@@ -1,6 +1,7 @@
 package networkchat.server.gui;
 
 import networkchat.server.common.ServerController;
+import networkchat.share.Logger;
 
 import javax.swing.*;
 import java.awt.*;
@@ -10,6 +11,7 @@ import java.util.Objects;
 public class ServerWindow extends JFrame {
     private final int WINDOW_HEIGHT = 417;
     private final int WINDOW_WIDTH = 280;
+    private final Logger logger;
 
     JButton btStart = new JButton("Start");
     JButton btStop = new JButton("Stop");
@@ -17,10 +19,11 @@ public class ServerWindow extends JFrame {
     JTextArea txtArea = new JTextArea("", 21, 23);
     ServerController controller;
 
-    public ServerWindow(ServerController controller) throws HeadlessException {
+    public ServerWindow(ServerController controller,Logger logger) throws HeadlessException {
         super("Chat server");
+        this.logger = logger;
         this.controller = controller;
-        Image iconImage = new ImageIcon(Objects.requireNonNull(getClass().getResource("/free-icon-sensor-11347283.png"))).getImage();
+        Image iconImage = new ImageIcon(Objects.requireNonNull(getClass().getResource("/icon-server.png"))).getImage();
         setIconImage(iconImage);
         setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
         //ставим окно по центру
@@ -64,8 +67,6 @@ public class ServerWindow extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 controller.btStartPressed();
-                btStart.setEnabled(false);
-                btStop.setEnabled(true);
             }
         });
 
@@ -73,8 +74,6 @@ public class ServerWindow extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 controller.btStopPressed();
-                btStop.setEnabled(false);
-                btStart.setEnabled(true);
             }
         });
 
@@ -84,7 +83,6 @@ public class ServerWindow extends JFrame {
                 controller.btExitPressed();
             }
         });
-
         setVisible(true);
     }
 
@@ -107,12 +105,39 @@ public class ServerWindow extends JFrame {
             }
         });
         popup.add(exitItem);
-
         // Создаем объект TrayIcon
-        return new TrayIcon(iconImage, "Chat server", popup);
+        TrayIcon trayIcon = new TrayIcon(iconImage, "Chat server", popup);
+        trayIcon.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                if(e.getClickCount()==2){
+                    setVisible(true);
+                    setState(Frame.NORMAL);
+                    toFront();
+                }
+            }
+        });
+        return trayIcon;
     }
 
     public void out(String text) {
         txtArea.append(text + "\n");
+        logger.put(text);
     }
+
+    public void setOfflineTheme(){
+        btExit.setEnabled(true);
+        btStart.setEnabled(true);
+        btStop.setEnabled(false);
+    }
+
+    public void setOnlineTheme(){
+        btExit.setEnabled(false);
+        btStart.setEnabled(false);
+        btStop.setEnabled(true);
+    }
+
+
+
 }
