@@ -8,12 +8,14 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.Objects;
 
 public class ClientWindow extends JFrame implements ActionListener {
-    private final int WINDOW_HEIGHT = 550;
-    private final int WINDOW_WIDTH = 368;
+    private final int WINDOW_HEIGHT = 545;
+    private final int WINDOW_WIDTH = 380;
 
     ClientController controller;
 
@@ -23,11 +25,11 @@ public class ClientWindow extends JFrame implements ActionListener {
     private final JPasswordField inputPassword = new JPasswordField("password");
     private final JButton btConnect = new JButton("Соединение");
 
-    private final JTextArea log = new JTextArea(24, 30);
+    private final JTextArea log = new JTextArea(23, 30);
 
-    private final JTextArea users = new JTextArea(26, 10);
+    private final JTextArea users = new JTextArea(22, 10);
 
-    private final JTextArea message = new JTextArea(2, 20);
+    private final JTextArea message = new JTextArea(3, 22);
     private final JButton btSend = new JButton("Отправить");
     JPanel center;
     Boolean isOffline = true;
@@ -53,8 +55,8 @@ public class ClientWindow extends JFrame implements ActionListener {
         inputPassword.setToolTipText("пароль");
         inputIp.setToolTipText("адрес сервера (URL или ip address)");
         inputPort.setToolTipText("порт сервера (1-65535)");
-        log.setAutoscrolls(true); // включаем автопрокрутку
         log.setEditable(false);   // запрещаем ввод данных с клавиатуры
+
 
         // добавление обработчиков событий
         btConnect.addActionListener(this);
@@ -69,12 +71,11 @@ public class ClientWindow extends JFrame implements ActionListener {
         header.setMaximumSize(new Dimension(368, 25));
 
         center = new JPanel(new FlowLayout());
-//        center.setBackground(Color.YELLOW);
-        center.setPreferredSize(new Dimension(368, 400));
+        center.setPreferredSize(new Dimension(368, 420));
 
         JPanel footer = new JPanel(new FlowLayout());
         footer.setBackground(Color.lightGray);
-        center.setMaximumSize(new Dimension(368, 25));
+        center.setMaximumSize(new Dimension(368, 28));
 
 
         header.add(inputIp);
@@ -85,9 +86,13 @@ public class ClientWindow extends JFrame implements ActionListener {
         header.add(btConnect);
 
         JScrollPane scrollLog = new JScrollPane(log);
+        scrollLog.setAutoscrolls(true);
         center.add(scrollLog);
 
-        footer.add(message);
+
+        JScrollPane scrollMessage = new JScrollPane(message);
+        scrollMessage.setMaximumSize(new Dimension(125, Integer.MAX_VALUE));
+        footer.add(scrollMessage);
         footer.add(btSend);
 
 
@@ -97,6 +102,10 @@ public class ClientWindow extends JFrame implements ActionListener {
         add(mainPanel);
 //        pack();
         setVisible(true);
+
+        // подгружаем старые логи
+        log.append(logger.getLogContents());
+        log.setCaretPosition(log.getDocument().getLength()); //принудительный переход на последнюю строку поля
     }
 
 
@@ -146,7 +155,11 @@ public class ClientWindow extends JFrame implements ActionListener {
     }
 
     public void out(String msg) {
-        log.append(msg + "\n");
+        // Генерируем строку с текущим временем и сообщением
+        SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
+        String formattedMessage = "[" + timeFormat.format(new Date()) + "] " + msg + "\n";
+        log.append(formattedMessage);
+        log.setCaretPosition(log.getDocument().getLength());
         logger.put(msg);
     }
 
