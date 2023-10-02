@@ -2,21 +2,21 @@ package networkchat.share;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class Logger {
     private final String logFilePath;
 
     public Logger(String ident) {
-        if(ident==null) ident = "";
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd");
-        String currentDate = dateFormat.format(new Date());
-        logFilePath = "log_"+ currentDate +"_"+ ident+".log";
+        if (ident == null) ident = "";
+        logFilePath = "log_" + ident + ".log";
     }
 
     public void put(String message) {
@@ -38,4 +38,21 @@ public class Logger {
             System.out.println("Ошибка ввода-вывода при записи в файл лога: " + e.getMessage());
         }
     }
-}
+
+        public String getLogContents() {
+            try {
+                Path path = Path.of(logFilePath);
+
+                // Check whether the log file exists
+                if (Files.exists(path)) {
+                    try (Stream<String> lines = Files.lines(path, StandardCharsets.UTF_8)) {
+                        return lines.collect(Collectors.joining("\n"));
+                    }
+                } else {
+                    return "";
+                }
+            } catch (IOException e) {
+                System.out.println("I/O error when reading the log file: " + e.getMessage());
+                return "";
+            }
+        }}

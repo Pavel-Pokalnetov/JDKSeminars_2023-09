@@ -8,12 +8,16 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.Objects;
 
 public class ClientWindow extends JFrame implements ActionListener {
-    private final int WINDOW_HEIGHT = 550;
-    private final int WINDOW_WIDTH = 368;
+    private final int WINDOW_HEIGHT = 545;
+    private final int WINDOW_WIDTH = 380;
 
     ClientController controller;
 
@@ -23,15 +27,16 @@ public class ClientWindow extends JFrame implements ActionListener {
     private final JPasswordField inputPassword = new JPasswordField("password");
     private final JButton btConnect = new JButton("Соединение");
 
-    private final JTextArea log = new JTextArea(24, 30);
+    private final JTextArea log = new JTextArea(23, 30);
 
-    private final JTextArea users = new JTextArea(26, 10);
+    private final JTextArea users = new JTextArea(22, 10);
 
-    private final JTextArea message = new JTextArea(2, 20);
+    private final JTextArea message = new JTextArea(3, 22);
     private final JButton btSend = new JButton("Отправить");
     JPanel center;
     Boolean isOffline = true;
     Logger logger;
+
     public ClientWindow(ClientController controller, Logger logger) {
         super("Chat client");
         this.controller = controller;
@@ -53,13 +58,30 @@ public class ClientWindow extends JFrame implements ActionListener {
         inputPassword.setToolTipText("пароль");
         inputIp.setToolTipText("адрес сервера (URL или ip address)");
         inputPort.setToolTipText("порт сервера (1-65535)");
-        log.setAutoscrolls(true); // включаем автопрокрутку
         log.setEditable(false);   // запрещаем ввод данных с клавиатуры
+
 
         // добавление обработчиков событий
         btConnect.addActionListener(this);
         btSend.addActionListener(this);
+        message.addKeyListener(new KeyListener() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+            }
 
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+                    String msg = message.getText();
+                    controller.btSend(msg);
+                    message.setText("");
+                }
+            }
+
+            @Override
+            public void keyReleased(KeyEvent e) {
+            }
+        });
 
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
@@ -69,12 +91,11 @@ public class ClientWindow extends JFrame implements ActionListener {
         header.setMaximumSize(new Dimension(368, 25));
 
         center = new JPanel(new FlowLayout());
-//        center.setBackground(Color.YELLOW);
-        center.setPreferredSize(new Dimension(368, 400));
+        center.setPreferredSize(new Dimension(368, 420));
 
         JPanel footer = new JPanel(new FlowLayout());
         footer.setBackground(Color.lightGray);
-        center.setMaximumSize(new Dimension(368, 25));
+        center.setMaximumSize(new Dimension(368, 28));
 
 
         header.add(inputIp);
@@ -85,9 +106,13 @@ public class ClientWindow extends JFrame implements ActionListener {
         header.add(btConnect);
 
         JScrollPane scrollLog = new JScrollPane(log);
+        scrollLog.setAutoscrolls(true);
         center.add(scrollLog);
 
-        footer.add(message);
+
+        JScrollPane scrollMessage = new JScrollPane(message);
+        scrollMessage.setMaximumSize(new Dimension(125, Integer.MAX_VALUE));
+        footer.add(scrollMessage);
         footer.add(btSend);
 
 
@@ -97,9 +122,13 @@ public class ClientWindow extends JFrame implements ActionListener {
         add(mainPanel);
 //        pack();
         setVisible(true);
+
+        // подгружаем старые логи
+        log.append(logger.getLogContents());
+        log.setCaretPosition(log.getDocument().getLength()); //принудительный переход на последнюю строку поля
     }
 
-
+    // обработка нажатия кнопок
     @Override
     public void actionPerformed(ActionEvent e) {
         Object source = e.getSource();
@@ -110,17 +139,18 @@ public class ClientWindow extends JFrame implements ActionListener {
             message.setText("");
         } else if (source == btConnect) {
             // соединение с сервером
-            if(isOffline){
-            try {
-                controller.connect(getConnectInfo());
-            } catch (InputException ex) {
-                switch (ex.getErrorCode()) {
-                    case 1 -> out("Ошибка в поле Аккаунт");
-                    case 2 -> out("Ошибка в пале Пароль");
-                    case 3 -> out("Ошибка в пале Адрес сервера");
-                    case 4 -> out("Ошибка в пале Порт");
+            if (isOffline) {
+                try {
+                    controller.connect(getConnectInfo());
+                } catch (InputException ex) {
+                    switch (ex.getErrorCode()) {
+                        case 1 -> out("Ошибка в поле Аккаунт");
+                        case 2 -> out("Ошибка в пале Пароль");
+                        case 3 -> out("Ошибка в пале Адрес сервера");
+                        case 4 -> out("Ошибка в пале Порт");
+                    }
                 }
-            }}else{
+            } else {
                 controller.disconnect();
             }
         }
@@ -146,7 +176,11 @@ public class ClientWindow extends JFrame implements ActionListener {
     }
 
     public void out(String msg) {
-        log.append(msg + "\n");
+        // Генерируем строку с текущим временем и сообщением
+        SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
+        String formattedMessage = "[" + timeFormat.format(new Date()) + "] " + msg + "\n";
+        log.append(formattedMessage);
+        log.setCaretPosition(log.getDocument().getLength());
         logger.put(msg);
     }
 
@@ -162,7 +196,7 @@ public class ClientWindow extends JFrame implements ActionListener {
         isOffline = false;
     }
 
-    public void setOfflineTheme(){
+    public void setOfflineTheme() {
         btConnect.setText("Подключить");
         inputIp.setEnabled(true);
         inputPassword.setEnabled(true);
@@ -173,7 +207,6 @@ public class ClientWindow extends JFrame implements ActionListener {
         center.setBackground(Color.lightGray);
         isOffline = true;
     }
-
 
 
 }
