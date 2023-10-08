@@ -6,14 +6,17 @@ import java.util.Map;
 public class ServerConfig {
     private String ip;
     private int port;
+    private boolean autostart = false;
 
     public void load(String configFile) throws RuntimeException {
         Yaml yaml = new Yaml();
         try (FileInputStream input = new FileInputStream(configFile)) {
             Map<String, Object> data = (Map<String, Object>) yaml.load(input);
 
-            this.ip = (String) data.get("ip");
-            this.port = (Integer) data.get("port");
+            ip = (String) data.get("ip");
+            port = (Integer) data.get("port");
+            autostart = (Boolean) data.get("autostart");
+//            System.out.println(autostart);
         } catch (Exception e) {
             throw new RuntimeException();
         }
@@ -27,4 +30,5 @@ public class ServerConfig {
         return port;
     }
 
+    public boolean getAutostart(){return autostart;}
 }

@@ -1,6 +1,6 @@
 package networkchat.client.gui;
 
-import networkchat.client.common.ClientController;
+import networkchat.client.common.ChatClientCore;
 import networkchat.client.common.ConnectData;
 import networkchat.share.Logger;
 
@@ -10,16 +10,17 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Objects;
 
-public class ClientWindow extends JFrame implements ActionListener {
+public class ClientWindow extends JFrame implements ActionListener, ClientGUI {
     private final int WINDOW_HEIGHT = 545;
     private final int WINDOW_WIDTH = 380;
 
-    ClientController controller;
+    ChatClientCore controller;
 
     private final JTextField inputIp = new JTextField("localhost", 10);
     private final JTextField inputPort = new JTextField("9190");
@@ -37,9 +38,9 @@ public class ClientWindow extends JFrame implements ActionListener {
     Boolean isOffline = true;
     Logger logger;
 
-    public ClientWindow(ClientController controller, Logger logger) {
+    public ClientWindow(ChatClientCore chatCore, Logger logger) {
         super("Chat client");
-        this.controller = controller;
+        this.controller = chatCore;
         this.logger = logger;
         Image iconImage = new ImageIcon(Objects.requireNonNull(getClass().getResource("/icon-client.png"))).getImage();
         setIconImage(iconImage);
@@ -61,7 +62,7 @@ public class ClientWindow extends JFrame implements ActionListener {
         log.setEditable(false);   // запрещаем ввод данных с клавиатуры
 
 
-        // добавление обработчиков событий
+        // добавление обработчиков событий на компоненты окна
         btConnect.addActionListener(this);
         btSend.addActionListener(this);
         message.addKeyListener(new KeyListener() {
@@ -73,7 +74,7 @@ public class ClientWindow extends JFrame implements ActionListener {
             public void keyPressed(KeyEvent e) {
                 if (e.getKeyCode() == KeyEvent.VK_ENTER) {
                     String msg = message.getText();
-                    controller.btSend(msg);
+                    chatCore.sendMessage(msg);
                     message.setText("");
                 }
             }
@@ -120,7 +121,7 @@ public class ClientWindow extends JFrame implements ActionListener {
         mainPanel.add(center);
         mainPanel.add(footer);
         add(mainPanel);
-//        pack();
+        //pack();
         setVisible(true);
 
         // подгружаем старые логи
@@ -135,7 +136,7 @@ public class ClientWindow extends JFrame implements ActionListener {
         if (source == btSend) {
             // отправка сообщения
             String msg = message.getText();
-            controller.btSend(msg);
+            controller.sendMessage(msg);
             message.setText("");
         } else if (source == btConnect) {
             // соединение с сервером
@@ -144,10 +145,10 @@ public class ClientWindow extends JFrame implements ActionListener {
                     controller.connect(getConnectInfo());
                 } catch (InputException ex) {
                     switch (ex.getErrorCode()) {
-                        case 1 -> out("Ошибка в поле Аккаунт");
-                        case 2 -> out("Ошибка в пале Пароль");
-                        case 3 -> out("Ошибка в пале Адрес сервера");
-                        case 4 -> out("Ошибка в пале Порт");
+                        case 1 -> outText("Ошибка в поле Аккаунт");
+                        case 2 -> outText("Ошибка в пале Пароль");
+                        case 3 -> outText("Ошибка в пале Адрес сервера");
+                        case 4 -> outText("Ошибка в пале Порт");
                     }
                 }
             } else {
@@ -157,6 +158,7 @@ public class ClientWindow extends JFrame implements ActionListener {
     }
 
     private ConnectData getConnectInfo() throws InputException {
+        //данные о подключении (login,password,address,port)
         String login, password, address;
         int port;
         try {
@@ -175,15 +177,17 @@ public class ClientWindow extends JFrame implements ActionListener {
 
     }
 
-    public void out(String msg) {
-        // Генерируем строку с текущим временем и сообщением
-        SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
-        String formattedMessage = "[" + timeFormat.format(new Date()) + "] " + msg + "\n";
+    @Override
+    public void outText(String msg) {
+        SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");// Генерируем строку с текущим временем и сообщением
+        String formattedMessage = MessageFormat.format("[{0}] {1}\n", timeFormat.format(new Date()), msg);
+
         log.append(formattedMessage);
         log.setCaretPosition(log.getDocument().getLength());
         logger.put(msg);
     }
 
+    @Override
     public void setOnlineTheme() {
         btConnect.setText("Отключить");
         inputIp.setEnabled(false);
@@ -196,6 +200,7 @@ public class ClientWindow extends JFrame implements ActionListener {
         isOffline = false;
     }
 
+    @Override
     public void setOfflineTheme() {
         btConnect.setText("Подключить");
         inputIp.setEnabled(true);
@@ -206,6 +211,16 @@ public class ClientWindow extends JFrame implements ActionListener {
         message.setEnabled(false);
         center.setBackground(Color.lightGray);
         isOffline = true;
+    }
+
+    @Override
+    public void showOnDesktop() {
+        setExtendedState(JFrame.ICONIFIED);
+    }
+
+    @Override
+    public void hideOnDesktop() {
+        setExtendedState(JFrame.ICONIFIED);
     }
 
 

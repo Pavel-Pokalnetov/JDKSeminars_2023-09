@@ -1,9 +1,10 @@
 package networkchat.client.common;
 
 import networkchat.client.gui.ClientWindow;
+import networkchat.share.Log2File;
 import networkchat.share.Logger;
 
-public class ClientController {
+public class Controller implements ChatClientCore {
 
     private ClientWindow window;
     private String serverAddress;
@@ -11,17 +12,19 @@ public class ClientController {
     private String login;
     private String password;
 
-    public ClientController() {
-        Logger logger = new Logger("cl");
-        this.window = new ClientWindow(this,logger);
+    public Controller() {
+        Logger logger = new Log2File("cl");
+        this.window = new ClientWindow(this, logger);
         window.setOfflineTheme();
     }
 
-    public void btSend(String msg) {
+    @Override
+    public void sendMessage(String msg) {
         //отправка сообщения
-        window.out(msg);
+        window.outText(msg);
     }
 
+    @Override
     public void connect(ConnectData connectInfo) {
         serverAddress = connectInfo.address();
         serverPort = connectInfo.port();
@@ -29,18 +32,19 @@ public class ClientController {
         password = connectInfo.password();
 
         // блок соединения с сервером
-        window.out("Соединяемся с " + serverAddress + ":" + serverPort);
+        window.outText("Соединяемся с " + serverAddress + ":" + serverPort);
 
         // авторизуемся
-        window.out("Попытка авторизации: " + login);
+        window.outText("Попытка авторизации: " + login);
 
         //соединились
         window.setOnlineTheme();
     }
 
+    @Override
     public void disconnect() {
         //отсоединение от сервера
-        window.out("переход в оффлайн");
+        window.outText("переход в оффлайн");
         window.setOfflineTheme();
     }
 }
