@@ -3,3 +3,60 @@
 [18:21:57] Socket: 127.0.0.1:9190
 [18:21:58] Server stopped
 [18:21:59] Application exit
+[17:34:24] Application start
+[17:34:45] Application start
+[17:34:55] Application start
+[17:35:32] Application start
+[17:35:43] Application start
+[17:38:30] Application start
+[17:39:05] Application start
+[17:40:56] Application start
+[17:42:11] Application start
+[17:42:13] Server started in port: 6666
+[17:43:01] Application start
+[17:43:04] Server started in port: 6666
+[17:43:07] Server stopped
+[17:43:15] Server started in port: 6666
+[17:43:22] Server stopped
+[17:43:25] Server started in port: 6666
+[17:43:31] Server stopped
+[17:44:57] Application start
+[17:44:59] Server started in port: 6666
+[17:45:35] Server stopped
+[17:45:43] Server started in port: 6666
+[17:46:37] Server stopped
+[17:46:58] Server started in port: 6666
+[17:47:04] Server stopped
+[17:47:08] Server started in port: 6666
+[17:47:14] Server stopped
+[17:47:23] Application start
+[17:47:25] Server started in port: 6666
+[17:47:28] Server stopped
+[17:47:29] Server started in port: 6666
+[17:47:32] Server stopped
+[17:51:52] Application start
+[17:51:53] Server started in port: 6666
+[17:51:56] Server stopped
+[17:52:01] Server started in port: 6666
+[17:52:08] Server stopped
+[17:52:14] Server started in port: 6666
+[17:52:23] Server stopped
+[17:52:41] Server started in port: 6666
+[17:52:47] Server stopped
+[17:52:52] Server started in port: 6666
+[17:53:04] Server stopped
+[17:53:06] Server started in port: 6666
+[17:53:13] Server stopped
+[17:53:32] Server started in port: 6666
+[17:53:35] Server stopped
+[17:53:37] Server started in port: 6666
+[17:53:41] Server stopped
+[17:53:46] Server started in port: 6666
+[17:53:51] Application start
+[17:54:49] Server started in port: 6666
+[17:54:52] Thread[#40,Thread-0,6,]
+[17:54:52] Server stopped
+[17:54:56] Server started in port: 6666
+[17:55:00] Thread[#41,Thread-1,6,]
+[17:55:00] Server stopped
+[17:55:05] Application exit
