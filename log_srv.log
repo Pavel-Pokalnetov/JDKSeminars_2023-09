@@ -60,3 +60,10 @@
 [17:55:00] Thread[#41,Thread-1,6,]
 [17:55:00] Server stopped
 [17:55:05] Application exit
+[17:58:14] Application start
+[17:58:15] Server started in port: 6666
+[17:58:18] else
+[17:58:18] Server stopped
+[17:58:20] Server started in port: 6666
+[17:58:24] else
+[17:58:24] Server stopped

@@ -36,8 +36,6 @@ public class ServerController implements ChatServerCore {
         tcpServer = new TCPServer(port,this);
         threadTCPServer = new Thread(tcpServer);
         threadTCPServer.start();
-        System.out.println("1");
-        window.outText(String.format("Server started in port: %s",port));
         window.setOnlineTheme();
     }
 
@@ -45,7 +43,6 @@ public class ServerController implements ChatServerCore {
     public void serverStop() {
         //здесь код остановки потоков сервера
         tcpServer.stop();
-        window.outText(threadTCPServer.toString());
         window.outText("Server stopped");
         window.setOfflineTheme();
     }
