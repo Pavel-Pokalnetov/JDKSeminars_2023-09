@@ -7,5 +7,4 @@ public class Server {
         new ServerController();
     }
 
-
 }

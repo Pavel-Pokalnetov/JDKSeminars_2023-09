@@ -3,7 +3,7 @@ package networkchat.server.gui;
 import networkchat.server.common.ChatServerCore;
 import networkchat.server.common.ServerController;
 import networkchat.share.Logger;
-import org.jetbrains.annotations.NotNull;
+
 
 import javax.swing.*;
 import java.awt.*;
@@ -13,12 +13,13 @@ import java.util.Objects;
 public class ServerWindow extends JFrame implements ServerGUI {
     private final int WINDOW_HEIGHT = 417;
     private final int WINDOW_WIDTH = 280;
-    private final Logger logger;
+
+    private Logger logger;
 
     JButton btStart = new JButton("Start");
     JButton btStop = new JButton("Stop");
     JButton btExit = new JButton("Exit");
-    JTextArea txtArea = new JTextArea("", 21, 23);
+    JTextArea log = new JTextArea("", 21, 23);
     ChatServerCore controller;
 
     public ServerWindow(ServerController controller, Logger logger) throws HeadlessException {
@@ -69,7 +70,9 @@ public class ServerWindow extends JFrame implements ServerGUI {
         pnlFooter.add(btExit);
         // панель для текстового поля
         JPanel pnlText = new JPanel();
-        pnlText.add(txtArea);
+        JScrollPane scrollLog = new JScrollPane(log);
+        scrollLog.setAutoscrolls(true);
+        pnlText.add(scrollLog);
 
         add(pnlText, BorderLayout.NORTH);
         add(pnlFooter, BorderLayout.SOUTH);
@@ -100,7 +103,7 @@ public class ServerWindow extends JFrame implements ServerGUI {
     }
 
 
-    @NotNull
+
     private PopupMenu getPopupMenu() {
         // всплывающее меню иконки в трее
         PopupMenu popup = new PopupMenu();
@@ -126,7 +129,7 @@ public class ServerWindow extends JFrame implements ServerGUI {
 
     @Override
     public void outText(String text) {
-        txtArea.append(text + "\n");
+        log.append(text + "\n");
         logger.put(text);
     }
 
@@ -153,6 +156,4 @@ public class ServerWindow extends JFrame implements ServerGUI {
         btStart.setEnabled(false);
         btStop.setEnabled(true);
     }
-
-
 }

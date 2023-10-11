@@ -3,7 +3,6 @@ package networkchat.server.common;
 import networkchat.server.gui.ServerWindow;
 import networkchat.share.Log2File;
 import networkchat.share.Logger;
-import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 
@@ -11,7 +10,7 @@ import static javax.swing.JOptionPane.showMessageDialog;
 
 public class ServerController implements ChatServerCore {
     private final Integer port;
-    private Logger logger;
+    private final Logger logger;
     private final ServerWindow window;
     private TCPServer tcpServer;
     Thread threadTCPServer;
@@ -27,7 +26,6 @@ public class ServerController implements ChatServerCore {
             // здесь код для автозапуска сервера
             serverStart();
         }
-
     }
 
     @Override
@@ -56,10 +54,9 @@ public class ServerController implements ChatServerCore {
 
     @Override
     public void log(String s) {
-
+        window.outText(s);
     }
 
-    @NotNull
     private ServerConfig getServerConfig() {
         //получение настроек сервера из конфигурационного файла
         ServerConfig serverConfig = new ServerConfig();
@@ -73,8 +70,4 @@ public class ServerController implements ChatServerCore {
         return serverConfig;
     }
 
-    public static void main(String[] args) {
-        ChatServerCore chatServerCore = new ServerController();
-
-    }
 }

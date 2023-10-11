@@ -14,44 +14,47 @@ public class ClientHandler implements Runnable {
     ChatServerCore chatServerCore;
     private volatile boolean isRunning = true;
 
-    public ClientHandler(Socket socket, ChatServerCore chatServerCore) {
+    public ClientHandler(Socket socket,TCPServer server, ChatServerCore chatServerCore) {
         this.clientSocket = socket;
         this.chatServerCore = chatServerCore;
+        this.server = server;
         try {
             out = new PrintWriter(socket.getOutputStream(), true);
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
 
     @Override
     public void run() {
+        //основной поток соединения сервера с клиентом
         String message;
-
         try {
             while (isRunning) {
-                while ((message = in.readLine()) != null) {
+                while ((message = in.readLine()) != null) {//ждем получения данных
                     // Обработка полученных данных от клиента
                     chatServerCore.log("Получено сообщение от клиента: " + message);
 
-                    // Для отправки данных в контроллер
+                    //здесь какие-нибудь действия с сообщением
+
+                    // рассылка сообщения всем через метод бродкаст сервера
                     server.broadcast(message);
                 }
             }
-
         } catch (IOException e) {
+            chatServerCore.log("#1");
             e.printStackTrace();
         } finally {
             try {
-                clientSocket.close();
+                clientSocket.close();//закрываем сокет
                 // Удаление текущего клиента из списка
-                server.removeClient(this);
-                isRunning=false;
-                return;
             } catch (IOException e) {
+                chatServerCore.log("#2");
                 e.printStackTrace();
             }
+            server.removeClient(this);
+            isRunning = false;
         }
 
     }
