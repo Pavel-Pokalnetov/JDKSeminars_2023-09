@@ -10,7 +10,7 @@ public class ServerConfig {
     public void load(String configFile) throws RuntimeException {
         Yaml yaml = new Yaml();
         try (FileInputStream input = new FileInputStream(configFile)) {
-            Map<String, Object> data = (Map<String, Object>) yaml.load(input);
+            Map<String, Object> data = yaml.load(input);
 
             port = (Integer) data.get("port");
             autostart = (Boolean) data.get("autostart");

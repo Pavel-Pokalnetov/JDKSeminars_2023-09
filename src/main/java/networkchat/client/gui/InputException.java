@@ -1,7 +1,7 @@
 package networkchat.client.gui;
 
 public class InputException extends Exception {
-    private int errorCode;
+    private final int errorCode;
 
     public InputException(int errorCode) {
         super();

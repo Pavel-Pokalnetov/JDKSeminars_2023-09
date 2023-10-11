@@ -1,29 +1,22 @@
 package networkchat.server.common;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.Socket;
 
 public class ClientHandler implements Runnable {
-    private Socket clientSocket;
+    private final Socket clientSocket;
     private PrintWriter out;
     private BufferedReader in;
-    private TCPServer server;
+    private final TCPServer server;
     ChatServerCore chatServerCore;
     private volatile boolean isRunning = true;
+    private final String name;
 
-    public ClientHandler(Socket socket,TCPServer server, ChatServerCore chatServerCore) {
+    public ClientHandler(Socket socket, String name, TCPServer server, ChatServerCore chatServerCore) {
         this.clientSocket = socket;
+        this.name = name;
         this.chatServerCore = chatServerCore;
         this.server = server;
-        try {
-            out = new PrintWriter(socket.getOutputStream(), true);
-            in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     @Override
@@ -31,26 +24,22 @@ public class ClientHandler implements Runnable {
         //основной поток соединения сервера с клиентом
         String message;
         try {
-            while (isRunning) {
-                while ((message = in.readLine()) != null) {//ждем получения данных
-                    // Обработка полученных данных от клиента
-                    chatServerCore.log("Получено сообщение от клиента: " + message);
+            out = new PrintWriter(clientSocket.getOutputStream(), true);
+            in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 
-                    //здесь какие-нибудь действия с сообщением
-
-                    // рассылка сообщения всем через метод бродкаст сервера
-                    server.broadcast(message);
-                }
-            }
-        } catch (IOException e) {
-            chatServerCore.log("#1");
-            e.printStackTrace();
+            String inputLine;
+            while(isRunning){
+            while ((inputLine = in.readLine()) != null) {
+                chatServerCore.log(this.name+" >> " + inputLine);
+                server.broadcast(inputLine);
+            }}
+        } catch (
+                IOException e) {
+            System.out.println("Клиент отключился: " + clientSocket.getInetAddress().getHostAddress());
         } finally {
             try {
-                clientSocket.close();//закрываем сокет
-                // Удаление текущего клиента из списка
+                clientSocket.close();
             } catch (IOException e) {
-                chatServerCore.log("#2");
                 e.printStackTrace();
             }
             server.removeClient(this);
@@ -60,10 +49,25 @@ public class ClientHandler implements Runnable {
     }
 
     public synchronized void sendMessage(String message) {
-        out.println(message);
+        if (out != null) {
+            out.println(message);
+            out.flush();
+        }
     }
 
-    public void stop() {
+    public synchronized void stop() {
+        isRunning = false;
+        while(!clientSocket.isClosed()){
+            try {
+                clientSocket.close();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
 
+    }
+
+    public String getName() {
+        return this.name;
     }
 }

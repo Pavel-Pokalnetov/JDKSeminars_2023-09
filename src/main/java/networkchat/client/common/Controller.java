@@ -6,7 +6,7 @@ import networkchat.share.Logger;
 
 public class Controller implements ChatClientCore {
 
-    private ClientWindow window;
+    private final ClientWindow window;
     private String serverAddress;
     private int serverPort;
     private String login;

@@ -14,7 +14,7 @@ public class ServerWindow extends JFrame implements ServerGUI {
     private final int WINDOW_HEIGHT = 417;
     private final int WINDOW_WIDTH = 280;
 
-    private Logger logger;
+    private final Logger logger;
 
     JButton btStart = new JButton("Start");
     JButton btStop = new JButton("Stop");
