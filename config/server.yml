@@ -1,2 +1,2 @@
-port: 6666
-autostart: false
+port: 11111
+autostart: true
