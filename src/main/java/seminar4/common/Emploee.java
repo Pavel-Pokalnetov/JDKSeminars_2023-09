@@ -51,10 +51,10 @@ public class Emploee {
     @Override
     public String toString() {
         return "Emploe{" +
-                "tabelNumber=" + tabelNumber +
-                ", name='" + name + '\'' +
-                ", phoneNumber='" + phoneNumber + '\'' +
-                ", experience=" + experience +
+                "таб.№=" + tabelNumber +
+                ", имя='" + name + '\'' +
+                ", тел.номер='" + phoneNumber + '\'' +
+                ", стаж=" + experience +
                 '}';
     }
 }
