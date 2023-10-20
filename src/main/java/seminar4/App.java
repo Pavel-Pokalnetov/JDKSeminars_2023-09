@@ -33,7 +33,7 @@ public class App {
     private static void printFindByTabelNumber(int tabel, RegisterEmployees reg) {
         System.out.println("Табельный номер: " + tabel);
         reg.findByTabelNumber(tabel).forEach(e -> {
-            System.out.println("\t"+e.getName());
+            System.out.println("\t"+e);
         });
         System.out.println();
     }
