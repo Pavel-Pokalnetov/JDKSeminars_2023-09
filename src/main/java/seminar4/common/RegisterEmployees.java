@@ -8,8 +8,14 @@ public class RegisterEmployees {
     List<Emploee> register;
 
     public RegisterEmployees() {
-        this.register = new ArrayList<>(10);
+        register = new ArrayList<>();
     }
+
+    public RegisterEmployees(int i) {
+        if (i>0) this.register = new ArrayList<>(i);
+        else register = new ArrayList<>();
+    }
+
 
     /** Добавление сторудника в справочник
      * @param e класс Emploee
@@ -50,7 +56,12 @@ public class RegisterEmployees {
         return register.stream()
                 .filter(emploee -> emploee.tabelNumber == tabel)
                 .toList();
+    }
 
-
+    /** Число сотрудников в списке
+     * @return
+     */
+    public int size(){
+        return register.size();
     }
 }
