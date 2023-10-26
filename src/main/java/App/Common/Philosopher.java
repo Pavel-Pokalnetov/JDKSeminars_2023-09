@@ -1,7 +1,7 @@
 package App.Common;
 
 public class Philosopher implements Runnable {
-    private int satiety = 1;
+    private int satiety = 3;
     private Fork rightFork;
     private Fork leftFork;
 
@@ -21,14 +21,14 @@ public class Philosopher implements Runnable {
             while (satiety > 0) {
                 action("думает",3000);
                 synchronized (rightFork) {
-                    action("взял вилку "+rightFork.number);
+                    action("взял вилку "+rightFork.number,500);
                     synchronized (leftFork) {
-                        action("взял вилку "+leftFork.number);
+                        action("взял вилку "+leftFork.number,500);
                         action("ест",2000);
                         satiety--;
-                        action("кладет на стол вилку "+leftFork.number);
+                        action("кладет на стол вилку "+leftFork.number,500);
                     }
-                    action("кладет на стол вилку "+rightFork.number);
+                    action("кладет на стол вилку "+rightFork.number,500);
                 }
             }
             action("наелся ++++++++++++++");
